@@ -6,13 +6,13 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: devopsDb
+      MYSQL_DATABASE: ObDb
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - devopsNet
+      - OBNet
 
   postgres:
     image: postgres:15.10
@@ -21,13 +21,13 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: devopsDb
+      POSTGRES_DB: ObDb
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - devopsNet
+      - OBNet
 
   mongo:
     image: mongodb/mongodb-community-server:7.0.16-ubuntu2204
@@ -36,7 +36,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: mongo
-      MONGO_INITDB_DATABASE: devopsDb
+      MONGO_INITDB_DATABASE: ObDb
     ports:
       - "27017:27017"
     volumes:
