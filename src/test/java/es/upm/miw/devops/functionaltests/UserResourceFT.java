@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,5 +39,13 @@ class UserResourceFT {
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.name").value("Oscar"))
                 .andExpect(jsonPath("$.familyName").value("Blasco"));
+    }
+
+    @Test
+    void testReadNonExistingUser() throws Exception {
+        mockMvc.perform(get("/user/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("UserNotFoundException"))
+                .andExpect(jsonPath("$.message").value("User not found: 999"));
     }
 }
