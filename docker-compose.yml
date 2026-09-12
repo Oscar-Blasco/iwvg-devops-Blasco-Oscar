@@ -6,10 +6,10 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - devopsNet
+      - OBNet
 
 networks:
-  devopsNet:
+  OBNet:
     external: true
 
 #> docker compose up --build -d
