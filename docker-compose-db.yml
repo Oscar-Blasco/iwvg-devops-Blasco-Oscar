@@ -26,6 +26,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - OBNet
 
@@ -43,7 +44,7 @@ services:
       - mongo_data:/data/db
       - mongo_config:/data/configdb
     networks:
-      - devopsNet
+      - OBNet
 
 volumes:
   mysql_data:
@@ -56,7 +57,7 @@ volumes:
     name: "mongo-config"
 
 networks:
-  devopsNet:
+  OBNet:
     external: true
 
 # Construir todas las BD
