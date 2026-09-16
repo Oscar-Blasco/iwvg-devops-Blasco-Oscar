@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [develop,v-*]
+    branches: [develop,v-*, master]
 
 jobs:
   devops:
@@ -42,7 +42,7 @@ jobs:
       # -------------------------------------------------------------
       - name: Notificar éxito a Slack
         if: success() # Solo se dispara si la compilación y tests fueron exitosos
-        uses: slackapi/slack-github-action@v1.26.0
+        uses: slackapi/slack-github-action@70cd7be8e40a46e8b0eced40b0de447bdb42f68e
         with:
           payload: |
             {
@@ -56,7 +56,7 @@ jobs:
       # -------------------------------------------------------------
       - name: Notificar fallo a Slack
         if: failure() # Solo se dispara si falló algún paso anterior
-        uses: slackapi/slack-github-action@v1.26.0
+        uses: slackapi/slack-github-action@70cd7be8e40a46e8b0eced40b0de447bdb42f68e
         with:
           payload: |
             {
