@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,5 +77,43 @@ class UserResourceFT {
         mockMvc.perform(get("/user")
                         .param("billable", "not-a-boolean"))
                 .andExpect(status().isInternalServerError());
+    void testToggleActiveFromTrueToFalse() throws Exception {
+        mockMvc.perform(put("/user/1/active"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("1"))
+                .andExpect(jsonPath("$.active").value(false));
+    }
+
+    @Test
+    void testToggleActiveFromFalseToTrue() throws Exception {
+        mockMvc.perform(put("/user/3/active"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("3"))
+                .andExpect(jsonPath("$.active").value(true));
+    }
+
+    @Test
+    void testToggleActiveForNonExistingUser() throws Exception {
+        mockMvc.perform(put("/user/999/active"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("UserNotFoundException"))
+                .andExpect(jsonPath("$.message").value("User not found: 999"));
+    }
+
+    @Test
+    void testDeleteExistingUser() throws Exception {
+        mockMvc.perform(delete("/user/4"))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/user/4"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDeleteNonExistingUser() throws Exception {
+        mockMvc.perform(delete("/user/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("UserNotFoundException"))
+                .andExpect(jsonPath("$.message").value("User not found: 999"));
     }
 }
