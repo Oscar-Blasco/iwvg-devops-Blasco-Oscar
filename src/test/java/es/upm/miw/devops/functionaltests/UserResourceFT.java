@@ -7,8 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,6 +39,30 @@ class UserResourceFT {
     @Test
     void returnsNotFoundForUnknownUser() throws Exception {
         mockMvc.perform(get("/user/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("UserNotFoundException"))
+                .andExpect(jsonPath("$.message").value("User not found: 999"));
+    }
+
+    @Test
+    void testToggleActiveFromTrueToFalse() throws Exception {
+        mockMvc.perform(put("/user/1/active"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("1"))
+                .andExpect(jsonPath("$.active").value(false));
+    }
+
+    @Test
+    void testToggleActiveFromFalseToTrue() throws Exception {
+        mockMvc.perform(put("/user/3/active"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("3"))
+                .andExpect(jsonPath("$.active").value(true));
+    }
+
+    @Test
+    void testToggleActiveForNonExistingUser() throws Exception {
+        mockMvc.perform(put("/user/999/active"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("UserNotFoundException"))
                 .andExpect(jsonPath("$.message").value("User not found: 999"));
