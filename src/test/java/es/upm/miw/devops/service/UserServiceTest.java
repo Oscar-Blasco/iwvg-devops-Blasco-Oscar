@@ -13,10 +13,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -74,6 +72,53 @@ class UserServiceTest {
 
         verify(userRepository).findById("1");
         verify(userRepository).delete(user);
+    }
+
+    @Test
+    void updateActiveShouldToggleFromTrueToFalse() {
+        User user = new User(
+                "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
+                "Calle Mayor 1", "Madrid", "Madrid", "28001",
+                Role.ADMIN, true
+        );
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        User result = userService.updateActive("1");
+
+        assertFalse(result.getActive());
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void updateActiveShouldToggleFromFalseToTrue() {
+        User user = new User(
+                "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
+                "Calle Mayor 1", "Madrid", "Madrid", "28001",
+                Role.ADMIN, false
+        );
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        User result = userService.updateActive("1");
+
+        assertTrue(result.getActive());
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void updateActiveShouldThrowExceptionWhenUserDoesNotExist() {
+        when(userRepository.findById("999")).thenReturn(Optional.empty());
+
+        assertThrows(
+                UserNotFoundException.class,
+                () -> userService.updateActive("999")
+        );
+
+        verify(userRepository).findById("999");
+        verifyNoMoreInteractions(userRepository);
     }
 
     @Test

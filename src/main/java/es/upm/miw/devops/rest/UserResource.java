@@ -21,6 +21,11 @@ public class UserResource {
         return new UserDto(userService.findById(id));
     }
 
+    @PutMapping("/{id}/active")
+    public UserDto updateActive(@PathVariable String id) {
+        return new UserDto(userService.updateActive(id));
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
