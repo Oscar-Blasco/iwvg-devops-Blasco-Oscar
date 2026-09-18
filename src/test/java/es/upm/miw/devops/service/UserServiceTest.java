@@ -147,6 +147,7 @@ class UserServiceTest {
 
         assertThat(userService.search("   ", null))
                 .containsExactly(billableUser, nonBillableUser);
+    }
 
     @Test
     void deleteShouldRemoveExistingUser() {

@@ -47,6 +47,8 @@ public class UserService {
             return null;
         }
         return value.trim().toLowerCase(Locale.ROOT);
+    }
+
     public User updateActive(String id) {
         User user = findById(id);
         user.setActive(!user.getActive());

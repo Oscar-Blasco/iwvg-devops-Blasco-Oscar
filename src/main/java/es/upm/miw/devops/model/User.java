@@ -70,6 +70,8 @@ public class User {
 
     private boolean hasContent(String value) {
         return value != null && !value.isBlank();
+    }
+
     public void setActive(Boolean active) {
         this.active = active;
     }

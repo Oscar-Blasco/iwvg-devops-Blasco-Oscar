@@ -32,6 +32,8 @@ public class UserResource {
                 .stream()
                 .map(UserDto::new)
                 .toList();
+    }
+
     @PutMapping("/{id}/active")
     public UserDto updateActive(@PathVariable String id) {
         return new UserDto(userService.updateActive(id));

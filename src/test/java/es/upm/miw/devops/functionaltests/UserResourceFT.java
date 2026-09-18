@@ -77,6 +77,9 @@ class UserResourceFT {
         mockMvc.perform(get("/user")
                         .param("billable", "not-a-boolean"))
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
     void testToggleActiveFromTrueToFalse() throws Exception {
         mockMvc.perform(put("/user/1/active"))
                 .andExpect(status().isOk())
