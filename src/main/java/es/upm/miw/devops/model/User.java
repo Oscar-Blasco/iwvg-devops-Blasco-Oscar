@@ -57,5 +57,18 @@ public class User {
     public String getPostalCode() { return postalCode; }
     public Boolean getActive() { return active; }
     public Role getRole() { return role; }
+    public boolean isBillable() {
+        return hasContent(name)
+                && hasContent(familyName)
+                && hasContent(email)
+                && hasContent(identity)
+                && hasContent(address)
+                && hasContent(city)
+                && hasContent(province)
+                && hasContent(postalCode);
+    }
 
+    private boolean hasContent(String value) {
+        return value != null && !value.isBlank();
+    }
 }

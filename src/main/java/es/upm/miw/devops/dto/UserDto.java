@@ -30,6 +30,8 @@ public class UserDto {
     private Role role;
     @JsonProperty("active")
     private final Boolean active;
+    @JsonProperty("isBillable")
+    private Boolean isBillable;
 
     public UserDto(User user) {
         this.id = user.getId();
@@ -43,6 +45,7 @@ public class UserDto {
         this.postalCode = user.getPostalCode();
         this.role = user.getRole();
         this.active = user.getActive();
+        this.isBillable = user.isBillable();
     }
 
     public String getId() { return id; }
@@ -56,5 +59,6 @@ public class UserDto {
     public String getPostalCode() { return postalCode; }
     public Role getRole() { return role; }
     public Boolean getActive() { return active; }
+    public Boolean isBillable() { return isBillable; }
 
 }
