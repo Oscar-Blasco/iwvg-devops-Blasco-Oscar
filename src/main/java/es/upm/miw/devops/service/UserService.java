@@ -18,6 +18,12 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
+    public User updateActive(String id) {
+        User user = findById(id);
+        user.setActive(!user.getActive());
+        return userRepository.save(user);
+    }
+
     public void delete(String id) {
         User user = findById(id);
         userRepository.delete(user);

@@ -58,4 +58,7 @@ public class User {
     public Boolean getActive() { return active; }
     public Role getRole() { return role; }
 
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
 }
