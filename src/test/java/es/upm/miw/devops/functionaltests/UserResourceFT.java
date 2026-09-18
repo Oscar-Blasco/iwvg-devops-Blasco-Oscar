@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,6 +40,23 @@ class UserResourceFT {
     @Test
     void returnsNotFoundForUnknownUser() throws Exception {
         mockMvc.perform(get("/user/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("UserNotFoundException"))
+                .andExpect(jsonPath("$.message").value("User not found: 999"));
+    }
+
+    @Test
+    void testDeleteExistingUser() throws Exception {
+        mockMvc.perform(delete("/user/4"))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/user/4"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDeleteNonExistingUser() throws Exception {
+        mockMvc.perform(delete("/user/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("UserNotFoundException"))
                 .andExpect(jsonPath("$.message").value("User not found: 999"));

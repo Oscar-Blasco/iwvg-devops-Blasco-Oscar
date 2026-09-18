@@ -1,5 +1,6 @@
 package es.upm.miw.devops.service;
 
+import es.upm.miw.devops.model.Role;
 import es.upm.miw.devops.model.User;
 import es.upm.miw.devops.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,5 +50,41 @@ class UserServiceTest {
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessage("User not found: 999");
         verify(userRepository).findById("999");
+    }
+
+    @Test
+    void deleteShouldRemoveExistingUser() {
+        User user = new User(
+                "1",
+                "Oscar",
+                "Blasco",
+                "oscar@example.com",
+                "12345678A",
+                "Calle Mayor 1",
+                "Madrid",
+                "Madrid",
+                "28001",
+                Role.ADMIN,
+                true
+        );
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+
+        userService.delete("1");
+
+        verify(userRepository).findById("1");
+        verify(userRepository).delete(user);
+    }
+
+    @Test
+    void deleteShouldThrowExceptionWhenUserDoesNotExist() {
+        when(userRepository.findById("999")).thenReturn(Optional.empty());
+
+        UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
+                () -> userService.delete("999")
+        );
+
+        assertEquals("User not found: 999", exception.getMessage());
     }
 }

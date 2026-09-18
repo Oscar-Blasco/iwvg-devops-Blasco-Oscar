@@ -17,4 +17,9 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
+
+    public void delete(String id) {
+        User user = findById(id);
+        userRepository.delete(user);
+    }
 }
