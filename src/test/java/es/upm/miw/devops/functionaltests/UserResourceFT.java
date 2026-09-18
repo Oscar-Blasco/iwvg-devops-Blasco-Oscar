@@ -45,6 +45,38 @@ class UserResourceFT {
     }
 
     @Test
+    void searchWithoutFiltersReturnsAllUsers() throws Exception {
+        mockMvc.perform(get("/user"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(4));
+    }
+
+    @Test
+    void searchBillableUsers() throws Exception {
+        mockMvc.perform(get("/user")
+                        .param("billable", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$[0].billable").value(true))
+                .andExpect(jsonPath("$[1].billable").value(true))
+                .andExpect(jsonPath("$[2].billable").value(true));
+    }
+
+    @Test
+    void searchNonBillableUsers() throws Exception {
+        mockMvc.perform(get("/user")
+                        .param("billable", "false"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value("3"))
+                .andExpect(jsonPath("$[0].billable").value(false));
+    }
+
+    @Test
+    void invalidBillableParameterReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/user")
+                        .param("billable", "not-a-boolean"))
+                .andExpect(status().isInternalServerError());
     void testToggleActiveFromTrueToFalse() throws Exception {
         mockMvc.perform(put("/user/1/active"))
                 .andExpect(status().isOk())

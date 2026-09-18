@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,20 +24,47 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     private UserService userService;
-    private User user;
+    private User billableUser;
+    private User nonBillableUser;
 
     @BeforeEach
     void setUp() {
         userService = new UserService(userRepository);
-        user = new User("1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
-                "Calle Mayor 1", "Madrid", "Madrid", "28001");
+
+        billableUser = new User(
+                "1",
+                "Oscar",
+                "Blasco",
+                "oscar@example.com",
+                "12345678A",
+                "Calle Mayor 1",
+                "Madrid",
+                "Madrid",
+                "28001",
+                Role.ADMIN,
+                true
+        );
+
+        nonBillableUser = new User(
+                "2",
+                "Luis",
+                "Perez",
+                null,
+                "23456789B",
+                "Calle Valencia 2",
+                "Valencia",
+                "Valencia",
+                "46001",
+                Role.CUSTOMER,
+                false
+        );
     }
 
     @Test
     void findByIdReturnsUserWhenItExists() {
-        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.findById("1")).thenReturn(Optional.of(nonBillableUser));
 
-        assertThat(userService.findById("1")).isSameAs(user);
+        assertThat(userService.findById("1")).isSameAs(nonBillableUser);
         verify(userRepository).findById("1");
     }
 
@@ -49,6 +77,76 @@ class UserServiceTest {
                 .hasMessage("User not found: 999");
         verify(userRepository).findById("999");
     }
+    @Test
+    void searchBillableUsers() {
+        when(userRepository.findAll())
+                .thenReturn(List.of(billableUser, nonBillableUser));
+
+        assertThat(userService.search(null, true))
+                .containsExactly(billableUser);
+    }
+
+    @Test
+    void searchNonBillableUsers() {
+        when(userRepository.findAll())
+                .thenReturn(List.of(billableUser, nonBillableUser));
+
+        assertThat(userService.search(null, false))
+                .containsExactly(nonBillableUser);
+    }
+
+    @Test
+    void searchWithoutBillableReturnsAllUsers() {
+        when(userRepository.findAll())
+                .thenReturn(List.of(billableUser, nonBillableUser));
+
+        assertThat(userService.search(null, null))
+                .containsExactly(billableUser, nonBillableUser);
+    }
+
+    @Test
+    void searchByName() {
+        when(userRepository.findAll())
+                .thenReturn(List.of(billableUser, nonBillableUser));
+
+        assertThat(userService.search("Oscar", null))
+                .containsExactly(billableUser);
+    }
+
+    @Test
+    void searchByFamilyName() {
+        when(userRepository.findAll())
+                .thenReturn(List.of(billableUser, nonBillableUser));
+
+        assertThat(userService.search("Blasco", null))
+                .containsExactly(billableUser);
+    }
+
+    @Test
+    void searchCombinesNameAndBillable() {
+        when(userRepository.findAll())
+                .thenReturn(List.of(billableUser, nonBillableUser));
+
+        assertThat(userService.search("Oscar", true))
+                .containsExactly(billableUser);
+    }
+
+    @Test
+    void searchIsCaseInsensitive() {
+        when(userRepository.findAll())
+                .thenReturn(List.of(billableUser));
+
+        assertThat(userService.search("  OSCAR  ", null))
+                .containsExactly(billableUser);
+    }
+
+    @Test
+    void blankNameDoesNotFilter() {
+        when(userRepository.findAll())
+                .thenReturn(List.of(billableUser, nonBillableUser));
+
+        assertThat(userService.search("   ", null))
+                .containsExactly(billableUser, nonBillableUser);
 
     @Test
     void deleteShouldRemoveExistingUser() {
