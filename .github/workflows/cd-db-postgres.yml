@@ -1,0 +1,29 @@
+name: CD
+on:
+  push:
+    branches: ['master']
+
+env:
+  REPOSITORY: ${{ github.repository }} # <user>/<repo>
+  GHCR_URL: ghcr.io # GitHub Container Registry
+
+jobs:
+  cd:
+     name: Deploy database into AWS Lightsail
+     runs-on: ubuntu-22.04
+      - name: 🚀 Deploy on AWS Lightsail
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.AWS_LIGHTSAIL_IP_MAIN }}
+          username: ${{ secrets.AWS_LIGHTSAIL_USERNAME }}
+          key: ${{ secrets.AWS_LIGHTSAIL_SSH }}
+          script: |
+            echo ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker rm -f postgress || true
+            docker network create OBNet || true
+            docker run -d \
+              --name ${{ env.ARTIFACT }} \
+              --restart always \
+              --network OBNet \
+              -e POSTGRES_USER="${{ secrets.POSTGRES_USER }}" \
+              -e POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" \
