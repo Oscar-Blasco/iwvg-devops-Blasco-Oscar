@@ -3,39 +3,76 @@ package es.upm.miw.devops.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     private String id;
+    @NotBlank
     private String name;
     private String familyName;
+    private String email;
+    private String identity;
+    private String address;
+    private String city;
+    private String province;
+    private String postalCode;
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    private Role role;
+    private Boolean active;
 
-    public User() {
+    protected User() {
     }
 
-    public User(String id, String name, String familyName) {
+    public User(String id, String firstName, String familyName, String email, String identity,
+                String address, String city, String province, String postalCode, Role role, Boolean active) {
         this.id = id;
-        this.name = name;
+        this.name = firstName;
         this.familyName = familyName;
+        this.email = email;
+        this.identity = identity;
+        this.address = address;
+        this.city = city;
+        this.province = province;
+        this.postalCode = postalCode;
+        this.active = active;
+        this.role = role;
     }
 
-    public String getId() {
-        return id;
+    public User(String id, String firstName, String familyName, String email, String identity,
+                String address, String city, String province, String postalCode) {
+        this(id, firstName, familyName, email, identity, address, city, province, postalCode, null, null);
     }
 
-
-    public String getName() {
-        return name;
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public String getFamilyName() { return familyName; }
+    public String getEmail() { return email; }
+    public String getIdentity() { return identity; }
+    public String getAddress() { return address; }
+    public String getCity() { return city; }
+    public String getProvince() { return province; }
+    public String getPostalCode() { return postalCode; }
+    public Boolean getActive() { return active; }
+    public Role getRole() { return role; }
+    public boolean isBillable() {
+        return hasContent(name)
+                && hasContent(familyName)
+                && hasContent(email)
+                && hasContent(identity)
+                && hasContent(address)
+                && hasContent(city)
+                && hasContent(province)
+                && hasContent(postalCode);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    private boolean hasContent(String value) {
+        return value != null && !value.isBlank();
     }
 
-    public String getFamilyName() {
-        return familyName;
+    public void setActive(Boolean active) {
+        this.active = active;
     }
-
 }
