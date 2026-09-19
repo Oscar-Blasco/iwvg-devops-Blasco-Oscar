@@ -20,8 +20,7 @@ jobs:
             username: ${{ secrets.AWS_LIGHTSAIL_USERNAME }}
             key: ${{ secrets.AWS_LIGHTSAIL_SSH }}
             script: |
-              echo ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
-              sudo docker rm -f postgress || true
+              sudo docker rm -f postgres-server || true
               sudo docker network create OBNet || true
               sudo docker run -d \
                 --name ${{ env.ARTIFACT }} \
@@ -29,3 +28,5 @@ jobs:
                 --network OBNet \
                 -e POSTGRES_USER="${{ secrets.POSTGRES_USER }}" \
                 -e POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" \
+                -e POSTGRES_DB=ObDb \
+                postgres:15.10
