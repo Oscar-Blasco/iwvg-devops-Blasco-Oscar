@@ -4,9 +4,11 @@ import es.upm.miw.devops.model.Role;
 import es.upm.miw.devops.model.User;
 import es.upm.miw.devops.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile({"dev", "pre", "prod", "test"})
 public class UserSeeder implements CommandLineRunner {
 
     private final UserRepository userRepository;
