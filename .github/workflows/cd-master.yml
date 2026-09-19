@@ -63,11 +63,11 @@ jobs:
           username: ${{ secrets.AWS_LIGHTSAIL_USERNAME }}
           key: ${{ secrets.AWS_LIGHTSAIL_SSH }}
           script: |
-            echo ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            docker pull ghcr.io/${{ env.REPOSITORY_LOWER }}:latest
-            docker rm -f ${{ env.ARTIFACT }} || true
-            docker run -d \
+            sudo docker pull ghcr.io/${{ env.REPOSITORY_LOWER }}:latest
+            sudo docker rm -f ${{ env.ARTIFACT }} || true
+            sudo docker run -d \
               --name ${{ env.ARTIFACT }} \
               --restart always \
               --memory 512m \
@@ -89,9 +89,9 @@ jobs:
 
             if [ "$STATUS" != "healthy" ]; then
               echo "❌ Deploy fallido"
-              docker logs --tail 50 ${{ env.ARTIFACT }}
+              sudo docker logs --tail 50 ${{ env.ARTIFACT }}
               exit 1
             fi
 
             echo "✅ Deploy exitoso"
-            docker image prune --filter "until=12h" -f
+            sudo docker image prune --filter "until=12h" -f
