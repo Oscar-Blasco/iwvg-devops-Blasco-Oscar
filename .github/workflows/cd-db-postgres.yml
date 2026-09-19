@@ -23,7 +23,7 @@ jobs:
               sudo docker rm -f postgres-server || true
               sudo docker network create OBNet || true
               sudo docker run -d \
-                --name ${{ env.ARTIFACT }} \
+                --name postgres-server \
                 --restart always \
                 --network OBNet \
                 -e POSTGRES_USER="${{ secrets.POSTGRES_USER }}" \
