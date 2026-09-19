@@ -65,7 +65,7 @@ jobs:
           script: |
             echo ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            docker pull ghcr.io/${{ env.REPOSITORY }}:latest
+            docker pull ghcr.io/${{ env.REPOSITORY_LOWER }}:latest
             docker rm -f ${{ env.ARTIFACT }} || true
             docker run -d \
               --name ${{ env.ARTIFACT }} \
@@ -77,7 +77,7 @@ jobs:
               -e SPRING_PROFILES_ACTIVE=prod \
               -e POSTGRES_USER="${{ secrets.POSTGRES_USER }}" \
               -e POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" \
-              ghcr.io/${{ env.REPOSITORY }}:latest
+              ghcr.io/${{ env.REPOSITORY_LOWER }}:latest
 
             echo "⏳ Esperando a que se levante"
             for i in $(seq 1 6); do
