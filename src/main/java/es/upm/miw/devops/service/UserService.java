@@ -1,6 +1,7 @@
 package es.upm.miw.devops.service;
 
 import es.upm.miw.devops.dto.UserActiveDto;
+import es.upm.miw.devops.dto.UserDto;
 import es.upm.miw.devops.model.User;
 import es.upm.miw.devops.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,21 @@ public class UserService {
             return null;
         }
         return value.trim().toLowerCase(Locale.ROOT);
+    }
+
+    public User update(String id, UserDto userDto) {
+        User user = findById(id);
+
+        user.setName(userDto.getName());
+        user.setFamilyName(userDto.getFamilyName());
+        user.setEmail(userDto.getEmail());
+        user.setIdentity(userDto.getIdentity());
+        user.setAddress(userDto.getAddress());
+        user.setCity(userDto.getCity());
+        user.setProvince(userDto.getProvince());
+        user.setPostalCode(userDto.getPostalCode());
+
+        return userRepository.save(user);
     }
 
     public User updateActive(String id) {

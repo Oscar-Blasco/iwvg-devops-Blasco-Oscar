@@ -40,6 +40,14 @@ public class UserResource {
         return new UserDto(userService.updateActive(id));
     }
 
+    @PutMapping("/{id}")
+    public UserDto update(
+            @PathVariable String id,
+            @RequestBody UserDto userDto) {
+
+        return new UserDto(userService.update(id, userDto));
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {

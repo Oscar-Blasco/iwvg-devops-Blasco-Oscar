@@ -1,6 +1,7 @@
 package es.upm.miw.devops.service;
 
 import es.upm.miw.devops.dto.UserActiveDto;
+import es.upm.miw.devops.dto.UserDto;
 import es.upm.miw.devops.model.Role;
 import es.upm.miw.devops.model.User;
 import es.upm.miw.devops.repository.UserRepository;
@@ -234,6 +235,98 @@ class UserServiceTest {
     }
 
     @Test
+    void testUpdate() {
+        User user = new User(
+                "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
+                "Calle Mayor 1", "Madrid", "Madrid", "28001",
+                Role.ADMIN, false
+        );
+
+        UserDto dto = new UserDto(
+                "Marta",
+                "Lopes",
+                "Marta.lopes@sadas.sa",
+                "6832163",
+                "calle mala 123",
+                "Madrid",
+                "Madrid",
+                "28001",
+                Role.AUTHENTICATED
+        );
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        User result = userService.update("1", dto);
+
+        assertEquals("1", result.getId());
+        assertEquals("Marta", result.getName());
+        assertEquals("Lopes", result.getFamilyName());
+        assertEquals("Marta.lopes@sadas.sa", result.getEmail());
+        assertEquals("6832163", result.getIdentity());
+        assertEquals("calle mala 123", result.getAddress());
+        assertEquals("Madrid", result.getCity());
+        assertEquals("Madrid", result.getProvince());
+        assertEquals("28001", result.getPostalCode());
+
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void testUpdateDoesNotChangeActiveOrRole() {
+        User user = new User(
+                "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
+                "Calle Mayor 1", "Madrid", "Madrid", "28001",
+                Role.ADMIN, true
+        );
+      UserDto dto = new UserDto(
+                "Marta",
+                "Lopes",
+                "Marta@email.com",
+                "12345678",
+                "Calle 1",
+                "Madrid",
+                "Madrid",
+                "28001",
+                Role.AUTHENTICATED
+        );
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        User result = userService.update("1", dto);
+
+        assertTrue(result.getActive());
+        assertEquals(Role.ADMIN, result.getRole());
+
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void testUpdateUserNotFound() {
+        UserDto dto = new UserDto(
+                "Martina",
+                "Violeta",
+                "Mart@email.com",
+                "1245678",
+                "Calle 2",
+                "Belgica",
+                "Belgica",
+                "28044",
+                Role.ADMIN
+        );
+
+        when(userRepository.findById("999")).thenReturn(Optional.empty());
+
+        assertThrows(
+                UserNotFoundException.class,
+                () -> userService.update("999", dto)
+        );
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
     void testUpdateActiveBulk() {
         User user1 = new User(
                 "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
@@ -296,7 +389,6 @@ class UserServiceTest {
                 "Calle Mayor 1", "Madrid", "Madrid", "28001",
                 Role.ADMIN, true
         );
-
         UserActiveDto dto = new UserActiveDto();
         dto.setId("1");
         dto.setActive(false);
