@@ -1,5 +1,6 @@
 package es.upm.miw.devops.rest;
 
+import es.upm.miw.devops.dto.UserActiveDto;
 import es.upm.miw.devops.dto.UserDto;
 import es.upm.miw.devops.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -43,5 +44,14 @@ public class UserResource {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
         userService.delete(id);
+    }
+
+    @PatchMapping
+    public List<UserDto> updateActive(
+            @RequestBody List<UserActiveDto> usersDto) {
+
+        return userService.updateActive(usersDto).stream()
+                .map(UserDto::new)
+                .toList();
     }
 }

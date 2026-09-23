@@ -1,5 +1,6 @@
 package es.upm.miw.devops.service;
 
+import es.upm.miw.devops.dto.UserActiveDto;
 import es.upm.miw.devops.model.User;
 import es.upm.miw.devops.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,17 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public List<User> updateActive(List<UserActiveDto> usersDto) {
+        List<User> users = usersDto.stream()
+                .map(dto -> findById(dto.getId()))
+                .toList();
+
+        for (int i = 0; i < users.size(); i++) {
+            users.get(i).setActive(usersDto.get(i).getActive());
+        }
+
+        return userRepository.saveAll(users);
+    }
     public void delete(String id) {
         User user = findById(id);
         userRepository.delete(user);
