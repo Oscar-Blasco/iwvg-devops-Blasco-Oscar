@@ -122,6 +122,48 @@ class UserResourceFT {
     }
 
     @Test
+    void testUpdateActiveBulk() throws Exception {
+        String body = """
+            [
+              {
+                "id": "3",
+                "active": true
+              },
+              {
+                "id": "2",
+                "active": true
+              }
+            ]
+            """;
+
+        mockMvc.perform(patch("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value("3"))
+                .andExpect(jsonPath("$[0].active").value(true))
+                .andExpect(jsonPath("$[1].id").value("2"))
+                .andExpect(jsonPath("$[1].active").value(true));
+    }
+
+    @Test
+    void testUpdateActiveBulkUserNotFound() throws Exception {
+        String body = """
+            [
+              {
+                "id": "999",
+                "active": false
+              }
+            ]
+            """;
+
+        mockMvc.perform(patch("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void testUpdate() throws Exception {
         String body = """
             {
@@ -174,5 +216,5 @@ class UserResourceFT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isNotFound());
-    }
+     }
 }
