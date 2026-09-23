@@ -241,15 +241,17 @@ class UserServiceTest {
                 Role.ADMIN, false
         );
 
-        UserDto dto = new UserDto();
-        dto.setName("Marta");
-        dto.setFamilyName("Lopes");
-        dto.setEmail("Marta.lopes@sadas.sa");
-        dto.setIdentity("6832163");
-        dto.setAddress("calle mala 123");
-        dto.setCity("Madrid");
-        dto.setProvince("Madrid");
-        dto.setPostalCode("28001");
+        UserDto dto = new UserDto(
+                "Marta",
+                "Lopes",
+                "Marta.lopes@sadas.sa",
+                "6832163",
+                "calle mala 123",
+                "Madrid",
+                "Madrid",
+                "28001",
+                Role.AUTHENTICATED
+        );
 
         when(userRepository.findById("1")).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
@@ -277,16 +279,17 @@ class UserServiceTest {
                 Role.ADMIN, true
         );
 
-        UserDto dto = new UserDto();
-        dto.setName("Marta");
-        dto.setFamilyName("Lopes");
-        dto.setEmail("marta@email.com");
-        dto.setIdentity("12345678");
-        dto.setAddress("Calle 1");
-        dto.setCity("Madrid");
-        dto.setProvince("Madrid");
-        dto.setPostalCode("28001");
-        dto.setRole(Role.AUTHENTICATED);
+        UserDto dto = new UserDto(
+                "Marta",
+                "Lopes",
+                "Marta@email.com",
+                "12345678",
+                "Calle 1",
+                "Madrid",
+                "Madrid",
+                "28001",
+                Role.AUTHENTICATED
+        );
 
         when(userRepository.findById("1")).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
@@ -301,8 +304,17 @@ class UserServiceTest {
 
     @Test
     void testUpdateUserNotFound() {
-        UserDto dto = new UserDto();
-        dto.setName("Marta");
+        UserDto dto = new UserDto(
+                "Martina",
+                "Violeta",
+                "Mart@email.com",
+                "1245678",
+                "Calle 2",
+                "Belgica",
+                "Belgica",
+                "28044",
+                Role.ADMIN
+        );
 
         when(userRepository.findById("999")).thenReturn(Optional.empty());
 
