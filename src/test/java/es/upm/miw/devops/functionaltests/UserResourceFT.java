@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -118,5 +119,47 @@ class UserResourceFT {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("UserNotFoundException"))
                 .andExpect(jsonPath("$.message").value("User not found: 999"));
+    }
+
+    @Test
+    void testUpdateActiveBulk() throws Exception {
+        String body = """
+            [
+              {
+                "id": "3",
+                "active": true
+              },
+              {
+                "id": "2",
+                "active": true
+              }
+            ]
+            """;
+
+        mockMvc.perform(patch("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value("3"))
+                .andExpect(jsonPath("$[0].active").value(true))
+                .andExpect(jsonPath("$[1].id").value("2"))
+                .andExpect(jsonPath("$[1].active").value(true));
+    }
+
+    @Test
+    void testUpdateActiveBulkUserNotFound() throws Exception {
+        String body = """
+            [
+              {
+                "id": "999",
+                "active": false
+              }
+            ]
+            """;
+
+        mockMvc.perform(patch("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isNotFound());
     }
 }

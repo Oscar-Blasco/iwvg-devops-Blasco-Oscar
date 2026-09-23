@@ -1,5 +1,6 @@
 package es.upm.miw.devops.service;
 
+import es.upm.miw.devops.dto.UserActiveDto;
 import es.upm.miw.devops.model.Role;
 import es.upm.miw.devops.model.User;
 import es.upm.miw.devops.repository.UserRepository;
@@ -230,5 +231,84 @@ class UserServiceTest {
         );
 
         assertEquals("User not found: 999", exception.getMessage());
+    }
+
+    @Test
+    void testUpdateActiveBulk() {
+        User user1 = new User(
+                "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
+                "Calle Mayor 1", "Madrid", "Madrid", "28001",
+                Role.ADMIN, true
+        );
+
+        User user2 = new User(
+                "1", "Maria", "Antonieta", "maria@example.com", "12345678A",
+                "Calle Mayor 2", "Madrid", "Madrid", "28002",
+                Role.ADMIN, false
+        );
+
+        UserActiveDto dto1 = new UserActiveDto();
+        dto1.setId("1");
+        dto1.setActive(false);
+
+        UserActiveDto dto2 = new UserActiveDto();
+        dto2.setId("2");
+        dto2.setActive(true);
+
+        List<UserActiveDto> dtos = List.of(dto1, dto2);
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user1));
+        when(userRepository.findById("2")).thenReturn(Optional.of(user2));
+        when(userRepository.saveAll(List.of(user1, user2)))
+                .thenReturn(List.of(user1, user2));
+
+        List<User> result = userService.updateActive(dtos);
+
+        assertEquals(2, result.size());
+        assertFalse(result.get(0).getActive());
+        assertTrue(result.get(1).getActive());
+
+        verify(userRepository).findById("1");
+        verify(userRepository).findById("2");
+        verify(userRepository).saveAll(List.of(user1, user2));
+    }
+
+    @Test
+    void testUpdateActiveBulkUserNotFound() {
+        UserActiveDto dto = new UserActiveDto();
+        dto.setId("999");
+        dto.setActive(false);
+
+        when(userRepository.findById("999")).thenReturn(Optional.empty());
+
+        assertThrows(
+                UserNotFoundException.class,
+                () -> userService.updateActive(List.of(dto))
+        );
+
+        verify(userRepository, never()).saveAll(any());
+    }
+
+    @Test
+    void testUpdateActiveBulkChangesActiveValue() {
+        User user = new User(
+                "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
+                "Calle Mayor 1", "Madrid", "Madrid", "28001",
+                Role.ADMIN, true
+        );
+
+        UserActiveDto dto = new UserActiveDto();
+        dto.setId("1");
+        dto.setActive(false);
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.saveAll(List.of(user)))
+                .thenReturn(List.of(user));
+
+        List<User> result = userService.updateActive(List.of(dto));
+
+        assertFalse(result.get(0).getActive());
+
+        verify(userRepository).saveAll(List.of(user));
     }
 }
