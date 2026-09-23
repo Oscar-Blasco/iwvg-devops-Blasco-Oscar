@@ -1,5 +1,6 @@
 package es.upm.miw.devops.service;
 
+import es.upm.miw.devops.dto.UserDto;
 import es.upm.miw.devops.model.Role;
 import es.upm.miw.devops.model.User;
 import es.upm.miw.devops.repository.UserRepository;
@@ -230,5 +231,86 @@ class UserServiceTest {
         );
 
         assertEquals("User not found: 999", exception.getMessage());
+    }
+
+    @Test
+    void testUpdate() {
+        User user = new User(
+                "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
+                "Calle Mayor 1", "Madrid", "Madrid", "28001",
+                Role.ADMIN, false
+        );
+
+        UserDto dto = new UserDto();
+        dto.setName("Marta");
+        dto.setFamilyName("Lopes");
+        dto.setEmail("Marta.lopes@sadas.sa");
+        dto.setIdentity("6832163");
+        dto.setAddress("calle mala 123");
+        dto.setCity("Madrid");
+        dto.setProvince("Madrid");
+        dto.setPostalCode("28001");
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        User result = userService.update("1", dto);
+
+        assertEquals("1", result.getId());
+        assertEquals("Marta", result.getName());
+        assertEquals("Lopes", result.getFamilyName());
+        assertEquals("Marta.lopes@sadas.sa", result.getEmail());
+        assertEquals("6832163", result.getIdentity());
+        assertEquals("calle mala 123", result.getAddress());
+        assertEquals("Madrid", result.getCity());
+        assertEquals("Madrid", result.getProvince());
+        assertEquals("28001", result.getPostalCode());
+
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void testUpdateDoesNotChangeActiveOrRole() {
+        User user = new User(
+                "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
+                "Calle Mayor 1", "Madrid", "Madrid", "28001",
+                Role.ADMIN, true
+        );
+
+        UserDto dto = new UserDto();
+        dto.setName("Marta");
+        dto.setFamilyName("Lopes");
+        dto.setEmail("marta@email.com");
+        dto.setIdentity("12345678");
+        dto.setAddress("Calle 1");
+        dto.setCity("Madrid");
+        dto.setProvince("Madrid");
+        dto.setPostalCode("28001");
+        dto.setRole(Role.AUTHENTICATED);
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        User result = userService.update("1", dto);
+
+        assertTrue(result.getActive());
+        assertEquals(Role.ADMIN, result.getRole());
+
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void testUpdateUserNotFound() {
+        UserDto dto = new UserDto();
+        dto.setName("Marta");
+
+        when(userRepository.findById("999")).thenReturn(Optional.empty());
+
+        assertThrows(
+                UserNotFoundException.class,
+                () -> userService.update("999", dto)
+        );
+
+        verify(userRepository, never()).save(any());
     }
 }
