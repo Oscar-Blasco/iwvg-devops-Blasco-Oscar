@@ -36,6 +36,28 @@ public class UserDto {
     public UserDto() {
     }
 
+    public UserDto(
+            String name,
+            String familyName,
+            String email,
+            String identity,
+            String address,
+            String city,
+            String province,
+            String postalCode,
+            Role role) {
+
+        this.name = name;
+        this.familyName = familyName;
+        this.email = email;
+        this.identity = identity;
+        this.address = address;
+        this.city = city;
+        this.province = province;
+        this.postalCode = postalCode;
+        this.role = role;
+    }
+
     public UserDto(User user) {
         this.id = user.getId();
         this.name = user.getName();
@@ -63,40 +85,6 @@ public class UserDto {
     public Role getRole() { return role; }
     public Boolean getActive() { return active; }
     public Boolean isBillable() { return isBillable; }
-    public void setName(String name) {
-        this.name = name;
-    }
 
-    public void setFamilyName(String familyName) {
-        this.familyName = familyName;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setIdentity(String identity) {
-        this.identity = identity;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
 }
