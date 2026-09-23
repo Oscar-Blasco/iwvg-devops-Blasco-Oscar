@@ -29,6 +29,31 @@ class UserDtoTest {
     }
 
     @Test
+    void constructorMapsAllFields() {
+        UserDto dto = new UserDto(
+                "Oscar",
+                "Blasco",
+                "oscar@example.com",
+                "12345678A",
+                "Calle Mayor 1",
+                "Madrid",
+                "Madrid",
+                "28001",
+                Role.ADMIN
+        );
+
+        assertThat(dto.getName()).isEqualTo("Oscar");
+        assertThat(dto.getFamilyName()).isEqualTo("Blasco");
+        assertThat(dto.getEmail()).isEqualTo("oscar@example.com");
+        assertThat(dto.getIdentity()).isEqualTo("12345678A");
+        assertThat(dto.getAddress()).isEqualTo("Calle Mayor 1");
+        assertThat(dto.getCity()).isEqualTo("Madrid");
+        assertThat(dto.getProvince()).isEqualTo("Madrid");
+        assertThat(dto.getPostalCode()).isEqualTo("28001");
+        assertThat(dto.getRole()).isEqualTo(Role.ADMIN);
+    }
+
+    @Test
     void mapsNullOptionalFields() {
         User user = new User("2", "Luis", "Perez", null, null,
                 null, null, null, null);
