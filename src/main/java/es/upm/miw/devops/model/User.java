@@ -72,6 +72,42 @@ public class User {
         return value != null && !value.isBlank();
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setFamilyName(String familyName) {
+        this.familyName = familyName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public void setActive(Boolean active) {
         this.active = active;
     }

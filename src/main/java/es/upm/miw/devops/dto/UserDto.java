@@ -8,30 +8,33 @@ import es.upm.miw.devops.model.User;
 @JsonInclude(JsonInclude.Include.ALWAYS)
 public class UserDto {
 
-    @JsonProperty("id")
-    private final String id;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String id;
     @JsonProperty("name")
-    private final String name;
+    private String name;
     @JsonProperty("familyName")
-    private final String familyName;
+    private String familyName;
     @JsonProperty("email")
-    private final String email;
+    private String email;
     @JsonProperty("identity")
-    private final String identity;
+    private String identity;
     @JsonProperty("address")
-    private final String address;
+    private String address;
     @JsonProperty("city")
-    private final String city;
+    private String city;
     @JsonProperty("province")
-    private final String province;
+    private String province;
     @JsonProperty("postalCode")
-    private final String postalCode;
-    @JsonProperty("role")
+    private String postalCode;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Role role;
-    @JsonProperty("active")
-    private final Boolean active;
-    @JsonProperty("isBillable")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Boolean active;
+    @JsonProperty(value = "billable", access = JsonProperty.Access.READ_ONLY)
     private Boolean isBillable;
+
+    public UserDto() {
+    }
 
     public UserDto(User user) {
         this.id = user.getId();
@@ -60,5 +63,40 @@ public class UserDto {
     public Role getRole() { return role; }
     public Boolean getActive() { return active; }
     public Boolean isBillable() { return isBillable; }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setFamilyName(String familyName) {
+        this.familyName = familyName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
 }
