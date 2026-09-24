@@ -7,3 +7,5 @@ spring:
     url: jdbc:postgresql://localhost:5432/ObDb
     username: postgres
     password: postgres
+app:
+  hosting: local
