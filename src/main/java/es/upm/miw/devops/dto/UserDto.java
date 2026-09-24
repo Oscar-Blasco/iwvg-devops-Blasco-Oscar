@@ -8,30 +8,55 @@ import es.upm.miw.devops.model.User;
 @JsonInclude(JsonInclude.Include.ALWAYS)
 public class UserDto {
 
-    @JsonProperty("id")
-    private final String id;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String id;
     @JsonProperty("name")
-    private final String name;
+    private String name;
     @JsonProperty("familyName")
-    private final String familyName;
+    private String familyName;
     @JsonProperty("email")
-    private final String email;
+    private String email;
     @JsonProperty("identity")
-    private final String identity;
+    private String identity;
     @JsonProperty("address")
-    private final String address;
+    private String address;
     @JsonProperty("city")
-    private final String city;
+    private String city;
     @JsonProperty("province")
-    private final String province;
+    private String province;
     @JsonProperty("postalCode")
-    private final String postalCode;
-    @JsonProperty("role")
+    private String postalCode;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Role role;
-    @JsonProperty("active")
-    private final Boolean active;
-    @JsonProperty("isBillable")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Boolean active;
+    @JsonProperty(value = "billable", access = JsonProperty.Access.READ_ONLY)
     private Boolean isBillable;
+
+    public UserDto() {
+    }
+
+    public UserDto(
+            String name,
+            String familyName,
+            String email,
+            String identity,
+            String address,
+            String city,
+            String province,
+            String postalCode,
+            Role role) {
+
+        this.name = name;
+        this.familyName = familyName;
+        this.email = email;
+        this.identity = identity;
+        this.address = address;
+        this.city = city;
+        this.province = province;
+        this.postalCode = postalCode;
+        this.role = role;
+    }
 
     public UserDto(User user) {
         this.id = user.getId();
@@ -60,5 +85,6 @@ public class UserDto {
     public Role getRole() { return role; }
     public Boolean getActive() { return active; }
     public Boolean isBillable() { return isBillable; }
+
 
 }

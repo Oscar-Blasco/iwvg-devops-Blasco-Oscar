@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -119,4 +120,101 @@ class UserResourceFT {
                 .andExpect(jsonPath("$.error").value("UserNotFoundException"))
                 .andExpect(jsonPath("$.message").value("User not found: 999"));
     }
+
+    @Test
+    void testUpdateActiveBulk() throws Exception {
+        String body = """
+            [
+              {
+                "id": "3",
+                "active": true
+              },
+              {
+                "id": "2",
+                "active": true
+              }
+            ]
+            """;
+
+        mockMvc.perform(patch("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value("3"))
+                .andExpect(jsonPath("$[0].active").value(true))
+                .andExpect(jsonPath("$[1].id").value("2"))
+                .andExpect(jsonPath("$[1].active").value(true));
+    }
+
+    @Test
+    void testUpdateActiveBulkUserNotFound() throws Exception {
+        String body = """
+            [
+              {
+                "id": "999",
+                "active": false
+              }
+            ]
+            """;
+
+        mockMvc.perform(patch("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testUpdate() throws Exception {
+        String body = """
+            {
+              "name": "Marta",
+              "familyName": "Lopes",
+              "email": "Marta.lopes@sadas.sa",
+              "identity": "6832163",
+              "address": "calle mala 123",
+              "city": "Madrid",
+              "province": "Madrid",
+              "postalCode": "28001"
+            }
+            """;
+
+        mockMvc.perform(put("/user/4")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("4"))
+                .andExpect(jsonPath("$.name").value("Marta"))
+                .andExpect(jsonPath("$.familyName").value("Lopes"))
+                .andExpect(jsonPath("$.email").value("Marta.lopes@sadas.sa"))
+                .andExpect(jsonPath("$.identity").value("6832163"))
+                .andExpect(jsonPath("$.address").value("calle mala 123"))
+                .andExpect(jsonPath("$.city").value("Madrid"))
+                .andExpect(jsonPath("$.province").value("Madrid"))
+                .andExpect(jsonPath("$.postalCode").value("28001"))
+                .andExpect(jsonPath("$.role").exists())
+                .andExpect(jsonPath("$.active").exists())
+                .andExpect(jsonPath("$.billable").exists())
+                .andExpect(jsonPath("$.isBillable").doesNotExist());
+    }
+
+    @Test
+    void testUpdateUserNotFound() throws Exception {
+        String body = """
+            {
+              "name": "Marta",
+              "familyName": "Lopes",
+              "email": "Marta.lopes@sadas.sa",
+              "identity": "6832163",
+              "address": "calle mala 123",
+              "city": "Madrid",
+              "province": "Madrid",
+              "postalCode": "28001"
+            }
+            """;
+
+        mockMvc.perform(put("/user/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isNotFound());
+     }
 }

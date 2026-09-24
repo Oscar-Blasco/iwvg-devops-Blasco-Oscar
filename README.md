@@ -15,6 +15,8 @@
 
 [![Render broken](https://iwvg-devops-blasco-oscar.onrender.com/version-badge)](https://iwvg-devops-blasco-oscar.onrender.com/swagger-ui.html)
 
+[![AWS](http://51.44.97.207:10000/version-badge)](http://51.44.97.207:10000)
+
 
 ### Tecnologías necesarias
 `Java` `Maven` `GitHub` `GitHub Actions` `Sonarcloud` `Slack` `Spring-Boot` `GitHub Packages` `Docker` `OpenAPI`
