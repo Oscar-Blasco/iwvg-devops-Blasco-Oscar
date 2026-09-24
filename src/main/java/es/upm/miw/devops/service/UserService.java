@@ -1,5 +1,7 @@
 package es.upm.miw.devops.service;
 
+import es.upm.miw.devops.dto.UserActiveDto;
+import es.upm.miw.devops.dto.UserDto;
 import es.upm.miw.devops.model.User;
 import es.upm.miw.devops.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -49,12 +51,38 @@ public class UserService {
         return value.trim().toLowerCase(Locale.ROOT);
     }
 
+    public User update(String id, UserDto userDto) {
+        User user = findById(id);
+
+        user.setName(userDto.getName());
+        user.setFamilyName(userDto.getFamilyName());
+        user.setEmail(userDto.getEmail());
+        user.setIdentity(userDto.getIdentity());
+        user.setAddress(userDto.getAddress());
+        user.setCity(userDto.getCity());
+        user.setProvince(userDto.getProvince());
+        user.setPostalCode(userDto.getPostalCode());
+
+        return userRepository.save(user);
+    }
+
     public User updateActive(String id) {
         User user = findById(id);
         user.setActive(!user.getActive());
         return userRepository.save(user);
     }
 
+    public List<User> updateActive(List<UserActiveDto> usersDto) {
+        List<User> users = usersDto.stream()
+                .map(dto -> findById(dto.getId()))
+                .toList();
+
+        for (int i = 0; i < users.size(); i++) {
+            users.get(i).setActive(usersDto.get(i).getActive());
+        }
+
+        return userRepository.saveAll(users);
+    }
     public void delete(String id) {
         User user = findById(id);
         userRepository.delete(user);
