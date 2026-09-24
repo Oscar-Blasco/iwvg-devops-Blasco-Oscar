@@ -1,5 +1,6 @@
 package es.upm.miw.devops.rest.exceptionshandler;
 
+import es.upm.miw.devops.service.AdminUserCannotBeDeactivatedException;
 import es.upm.miw.devops.service.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,17 @@ class ApiExceptionHandlerTest {
         assertThat(result.getCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(result.getError()).isEqualTo("UserNotFoundException");
         assertThat(result.getMessage()).isEqualTo("User not found: 42");
+    }
+
+    @Test
+    void adminUserCannotBeDeactivatedReturnsConflictMessage() {
+        ErrorMessage result = handler.adminUserCannotBeDeactivated(
+                new AdminUserCannotBeDeactivatedException("1")
+        );
+
+        assertThat(result.getCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(result.getError()).isEqualTo("AdminUserCannotBeDeactivatedException");
+        assertThat(result.getMessage()).isEqualTo("Admin user cannot be deactivated: 1");
     }
 
     @Test

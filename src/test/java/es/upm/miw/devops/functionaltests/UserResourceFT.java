@@ -216,5 +216,65 @@ class UserResourceFT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isNotFound());
-     }
+    }
+
+    @Test
+    void testUpdateActiveBulkCannotDeactivateAdmin() throws Exception {
+        String body = """
+        [
+          {
+            "id": "1",
+            "active": false
+          }
+        ]
+        """;
+
+        mockMvc.perform(patch("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error")
+                        .value("AdminUserCannotBeDeactivatedException"))
+                .andExpect(jsonPath("$.message")
+                        .value("Admin user cannot be deactivated: 1"));
+    }
+
+    @Test
+    void testUpdateActiveBulkCanKeepAdminActive() throws Exception {
+        String body = """
+        [
+          {
+            "id": "1",
+            "active": true
+          }
+        ]
+        """;
+
+        mockMvc.perform(patch("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value("1"))
+                .andExpect(jsonPath("$[0].active").value(true));
+    }
+
+    @Test
+    void testUpdateActiveBulkCanDeactivateNonAdmin() throws Exception {
+        String body = """
+        [
+          {
+            "id": "3",
+            "active": false
+          }
+        ]
+        """;
+
+        mockMvc.perform(patch("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value("3"))
+                .andExpect(jsonPath("$[0].active").value(false));
+    }
+
 }

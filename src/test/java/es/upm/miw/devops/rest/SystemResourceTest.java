@@ -39,10 +39,18 @@ class SystemResourceTest {
     @Test
     void generatedBadgeEndpointReturnsSvgBytes() {
         SystemResource resource = new SystemResource();
+
         ReflectionTestUtils.setField(resource, "version", "1.0");
+        ReflectionTestUtils.setField(resource, "hosting", "Docker");
 
-        String badge = new String(resource.generateBadge(), StandardCharsets.UTF_8);
+        String badge = new String(
+                resource.generateBadge(),
+                StandardCharsets.UTF_8
+        );
 
-        assertThat(badge).contains("<svg").contains("v1.0");
+        assertThat(badge)
+                .contains("<svg")
+                .contains("Docker")
+                .contains("v1.0");
     }
 }
