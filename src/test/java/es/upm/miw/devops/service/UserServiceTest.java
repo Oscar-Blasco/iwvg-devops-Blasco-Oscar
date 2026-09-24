@@ -331,13 +331,13 @@ class UserServiceTest {
         User user1 = new User(
                 "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
                 "Calle Mayor 1", "Madrid", "Madrid", "28001",
-                Role.ADMIN, true
+                Role.CUSTOMER, true
         );
 
         User user2 = new User(
                 "1", "Maria", "Antonieta", "maria@example.com", "12345678A",
                 "Calle Mayor 2", "Madrid", "Madrid", "28002",
-                Role.ADMIN, false
+                Role.CUSTOMER, false
         );
 
         UserActiveDto dto1 = new UserActiveDto();
@@ -387,7 +387,7 @@ class UserServiceTest {
         User user = new User(
                 "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
                 "Calle Mayor 1", "Madrid", "Madrid", "28001",
-                Role.ADMIN, true
+                Role.CUSTOMER, true
         );
         UserActiveDto dto = new UserActiveDto();
         dto.setId("1");
@@ -403,4 +403,85 @@ class UserServiceTest {
 
         verify(userRepository).saveAll(List.of(user));
     }
+
+    @Test
+    void testUpdateActiveBulkCannotDeactivateAdmin() {
+        User admin = new User(
+                "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
+                "Calle Mayor 1", "Madrid", "Madrid", "28001",
+                Role.ADMIN, true
+        );
+
+        UserActiveDto dto = new UserActiveDto();
+        dto.setId("1");
+        dto.setActive(false);
+
+        when(userRepository.findById("1"))
+                .thenReturn(Optional.of(admin));
+
+        assertThrows(
+                AdminUserCannotBeDeactivatedException.class,
+                () -> userService.updateActive(List.of(dto))
+        );
+
+        // El usuario no debe guardarse
+        verify(userRepository, never()).saveAll(any());
+    }
+
+
+    @Test
+    void testUpdateActiveBulkCanDeactivateNonAdmin() {
+        User user = new User(
+                "2", "Luis", "Perez", "luis@example.com", "23456789B",
+                "Calle Valencia 2", "Valencia", "Valencia", "46001",
+                Role.CUSTOMER, true
+        );
+
+        UserActiveDto dto = new UserActiveDto();
+        dto.setId("2");
+        dto.setActive(false);
+
+        when(userRepository.findById("2"))
+                .thenReturn(Optional.of(user));
+
+        when(userRepository.saveAll(List.of(user)))
+                .thenReturn(List.of(user));
+
+        List<User> result = userService.updateActive(List.of(dto));
+
+        assertEquals(1, result.size());
+        assertFalse(result.get(0).getActive());
+
+        verify(userRepository).findById("2");
+        verify(userRepository).saveAll(List.of(user));
+    }
+
+
+    @Test
+    void testUpdateActiveBulkCanKeepAdminActive() {
+        User admin = new User(
+                "1", "Oscar", "Blasco", "oscar@example.com", "12345678A",
+                "Calle Mayor 1", "Madrid", "Madrid", "28001",
+                Role.ADMIN, true
+        );
+
+        UserActiveDto dto = new UserActiveDto();
+        dto.setId("1");
+        dto.setActive(true);
+
+        when(userRepository.findById("1"))
+                .thenReturn(Optional.of(admin));
+
+        when(userRepository.saveAll(List.of(admin)))
+                .thenReturn(List.of(admin));
+
+        List<User> result = userService.updateActive(List.of(dto));
+
+        assertEquals(1, result.size());
+        assertTrue(result.get(0).getActive());
+
+        verify(userRepository).findById("1");
+        verify(userRepository).saveAll(List.of(admin));
+    }
+
 }
